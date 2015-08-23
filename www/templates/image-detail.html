@@ -1,0 +1,80 @@
+<ion-view title="Image Detail">
+    <ion-content ng-class="{expanded:isExpanded}">
+        <div class="list">
+            <div class="item item-divider">
+                <span>General Infomration</span>
+            </div>
+            <div class="item">
+                <Span>Id</Span>
+                <span class="item-note">
+                  {{::currentImage.Id | limitTo:15}}
+                </span>
+            </div>
+            <div class="item">
+                <Span>Architecture</Span>
+                <span class="item-note">
+                  {{::currentImage.Architecture}}
+                </span>
+            </div>
+            <div class="item">
+                <Span>Author</Span>
+                <span class="item-note">
+                  {{::currentImage.Author}}
+                </span>
+            </div>
+            <div class="item">
+                <Span>OS</Span>
+                <span class="item-note">
+                  {{::currentImage.Os}}
+                </span>
+            </div>
+            <div class="item">
+                <Span>Virtual Size</Span>
+                <span class="item-note">
+                  {{currentImage.VirtualSize/1000/1000 | number:1}} MB
+                </span>
+            </div>
+            <div class="item">
+                <Span>Docker Version</Span>
+                <span class="item-note">
+                  {{::currentImage.DockerVersion}}
+                </span>
+            </div>
+            <div class="item">
+                <Span>Created Date</Span>
+                <span class="item-note" am-time-ago = "currentImage.Created">
+                </span>
+            </div>
+            <div class="item item-divider">
+                Commands
+            </div>
+            <div class="item" style="font-size: 11px"
+                 ng-repeat="cmd in currentImage.Config.Cmd">
+                <span>{{::cmd}}</span>
+            </div>
+            <div class="item" style="font-size: 11px;" ng-show="!currentImage.Config.Cmd">
+                <span>No data</span>
+            </div>
+            <div class="item item-divider">
+                Entrypoint
+            </div>
+            <div class="item" style="font-size: 11px"
+                 ng-repeat="entry in currentImage.Config.Entrypoint">
+                <span>{{::entry}}</span>
+            </div>
+            <div class="item" style="font-size: 11px;" ng-show="!currentImage.Config.Entrypoint">
+                <span>No data</span>
+            </div>
+            <div class="item item-divider">
+                Environments
+            </div>
+            <div class="item" style="font-size: 11px"
+                 ng-repeat="env in currentImage.Config.Env">
+                <span>{{::env}}</span>
+            </div>
+            <div class="item" style="font-size: 11px;" ng-show="!currentImage.Config.Env">
+                <span>No data</span>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,52 @@
+{
+  "name": "dockerclient",
+  "version": "1.0.0",
+  "description": "dockerClient: An Ionic project",
+  "dependencies": {
+    "gulp": "^3.5.6",
+    "gulp-sass": "^1.3.3",
+    "gulp-concat": "^2.2.0",
+    "gulp-minify-css": "^0.3.0",
+    "gulp-rename": "^1.2.0",
+    "jspm": "^0.15.3"
+  },
+  "devDependencies": {
+    "bower": "^1.3.3",
+    "gulp-util": "^2.2.14",
+    "shelljs": "^0.3.0"
+  },
+  "cordovaPlugins": [
+    "cordova-plugin-device",
+    "cordova-plugin-console",
+    "cordova-plugin-whitelist",
+    "cordova-plugin-splashscreen",
+    "com.ionic.keyboard"
+  ],
+  "cordovaPlatforms": [],
+  "jspm": {
+    "directories": {
+      "baseURL": "www",
+      "packages": "www/lib"
+    },
+    "configFile": "www/js/config.js",
+    "dependencies": {
+      "angular": "github:angular/bower-angular@1.3.15",
+      "angular-animate": "github:angular/bower-angular-animate@1.3.13",
+      "angular-sanitize": "github:angular/bower-angular-sanitize@1.3.13",
+      "angular-ui-router": "github:angular-ui/ui-router@0.2.13",
+      "css": "github:systemjs/plugin-css@0.1.9",
+      "docker-api-wrapper": "npm:docker-api-wrapper@^0.2.9",
+      "ionic": "github:driftyco/ionic-bower@^1.0.1",
+      "moment": "github:moment/moment@^2.10.6",
+      "raibutera/robotodraft": "github:raibutera/robotodraft@^1.1.0",
+      "tls": "github:jspm/nodelibs-tls@^0.1.0",
+      "urish/angular-moment": "github:urish/angular-moment@^0.10.2",
+      "zachsoft/Ionic-Material": "github:zachsoft/Ionic-Material@^0.4.2"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.1.13",
+      "babel-runtime": "npm:babel-runtime@^5.1.13",
+      "core-js": "npm:core-js@^0.9.4"
+    }
+  }
+}

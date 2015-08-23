@@ -1,0 +1,32 @@
+<ion-view title="Images">
+    <ion-nav-buttons side="right">
+        <search-bar search-option="search" query-data="searchImages()"></search-bar>
+    </ion-nav-buttons>
+
+    <ion-content ng-class="{expanded:isExpanded}">
+        <ion-refresher pulling-text="Pull to refresh..."
+                       on-refresh="searchImages()">
+        </ion-refresher>
+        <div class="content">
+            <div class="list"> <!--animate-fade-slide-in-right-->
+                <div class="card-item" style="padding: 5px" ng-repeat="image in images">
+                    <div class="card stable-bg ink ink-dark"
+                         ui-sref="app.image-detail({imageId: image.Id})">
+                        <div class="item item-avatar item-text-wrap">
+                            <span class="avatar icon ion-social-tux"></span>
+                            <strong>{{image.RepoTags[0]}}</strong>
+                            <span style="display:block; font-size:10px">{{image.Id | limitTo:12}}</span>
+                            <div class="card-footer text-right">
+                                <i class="icon ion-chatbubbles positive"></i> {{image.VirtualSize/1000/1000 | number:1}} MB
+                                <div class="pull-left">
+                                    <i class="icon ion-clock"></i>
+                                    <span am-time-ago="image.Created" am-preprocess="unix"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>
