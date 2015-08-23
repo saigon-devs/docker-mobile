@@ -14,16 +14,17 @@ var paths = {
 gulp.task('default', ['sass']);
 
 gulp.task('sass', function(done) {
-  gulp.src('./www/lib/github/driftco/ionic-bower@1.1.0/scss/ionic.app.scss')
+  gulp.src('./scss/ionic.app.scss')
     .pipe(sass({
       errLogToConsole: true
     }))
-    .pipe(gulp.dest('./www/lib/github/driftco/ionic-bower@1.1.0/css/'))
+    //.pipe(rename('ionic.css'))
+    .pipe(gulp.dest('./www/css/'))
     .pipe(minifyCss({
       keepSpecialComments: 0
     }))
     .pipe(rename({ extname: '.min.css' }))
-    .pipe(gulp.dest('./www/lib/github/driftco/ionic-bower@1.1.0/css/'))
+    .pipe(gulp.dest('./www/css/'))
     .on('end', done);
 });
 

@@ -16,11 +16,11 @@ export function AppCtrl($scope) {
     document.getElementsByTagName('ion-nav-bar')[0].style.display = 'block';
   }
 
-  $scope.hideMenuToggle = ()=>{
+  $scope.hideMenuToggle = ()=> {
     angular.element(document.querySelector('[menu-toggle="left"]'))[0].style.display = 'none';
   }
 
-  $scope.showMenuToggle = ()=>{
+  $scope.showMenuToggle = ()=> {
     angular.element(document.querySelector('[menu-toggle="left"]'))[0].style.display = 'block';
   }
 
@@ -82,11 +82,11 @@ export function AppCtrl($scope) {
   };
 }
 
-export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService) {
+export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService, $ionicPopup) {
   $scope.search = {
     filterString: '',
     minLength: 3,
-    isShow:false
+    isShow: false
   }
 
   $scope.images = []
@@ -96,7 +96,7 @@ export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService) {
 
   $scope.$on('$ionicView.enter', ()=> {
     $scope.search.isShow = false
-    if($scope.images.length ===0){
+    if ($scope.images.length === 0) {
       $scope.searchImages()
     }
   })
@@ -112,7 +112,7 @@ export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService) {
     if ($scope.search.filterString.length >= $scope.search.minLength) {
       options.queryData["filter"] = '*' + $scope.search.filterString + '*'
     }
-    if($scope.search.filterString.length ===0 || $scope.search.filterString.length >= $scope.search.minLength){
+    if ($scope.search.filterString.length === 0 || $scope.search.filterString.length >= $scope.search.minLength) {
       $ionicLoading.show();
       imageService.getAllImages(options)
         .then((result)=> {
@@ -120,6 +120,14 @@ export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService) {
         }).then(()=> {
           $scope.$broadcast('scroll.refreshComplete');
           $ionicLoading.hide()
+        }).catch((reason)=> {
+          $ionicLoading.hide()
+          $scope.$broadcast('scroll.refreshComplete');
+          console.log("Err: " + reason)
+          $ionicPopup.alert({
+            title: 'Error',
+            template: 'Cannot connect to docker server.'
+          });
         })
     }
   }
@@ -154,7 +162,19 @@ export function ImageDetailCtrl($scope, $ionicLoading, $stateParams, imageServic
       .then(()=> {
         $ionicLoading.hide()
       })
+      .catch((reason)=>{
+        $ionicLoading.hide()
+        $ionicPopup.alert({
+          title: 'Error',
+          template: 'Cannot connect to docker server.'
+        });
+      })
   }
+}
+
+export function ServerCtrl($scope, $timeout){
+  $scope.servers = []
+
 }
 
 export function ContainersCtrl($scope, $timeout, ionicMaterialInk, ionicMaterialMotion) {
