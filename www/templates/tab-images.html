@@ -3,15 +3,18 @@
         <search-bar search-option="search" query-data="searchImages()"></search-bar>
     </ion-nav-buttons>
 
+
     <ion-content ng-class="{expanded:isExpanded}">
+
+
         <ion-refresher pulling-text="Pull to refresh..."
                        on-refresh="searchImages()">
         </ion-refresher>
         <div class="content">
-            <div class="list"> <!--animate-fade-slide-in-right-->
+            <ion-list class="animate-ripple">
                 <div class="card-item" style="padding: 5px" ng-repeat="image in images">
-                    <div class="card stable-bg ink ink-dark"
-                         ui-sref="app.image-detail({imageId: image.Id})">
+                    <div class="card stable-bg"
+                         ui-sref="app.image-detail({imageId: image.Id, imageName: image.RepoTags[0]})">
                         <div class="item item-avatar item-text-wrap">
                             <span class="avatar icon ion-social-tux"></span>
                             <strong>{{image.RepoTags[0]}}</strong>
@@ -26,7 +29,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </ion-list>
         </div>
     </ion-content>
+
+    <div>
+        <button class="button button-energized-900 button-fab button-fab-bottom-right">
+            <i class="icon ion-plus light"></i></button>
+    </div>
+
 </ion-view>

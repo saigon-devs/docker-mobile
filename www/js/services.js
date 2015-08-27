@@ -3,7 +3,7 @@ import {Image} from 'docker-api-wrapper'
 export function settingService(){
   return {
     CurrentDockerEndpoint:{
-      ip: '',
+      ip: 'jackyu1404.cloudapp.net',
       port: 2375,
     }
   }

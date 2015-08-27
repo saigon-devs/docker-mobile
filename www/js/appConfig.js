@@ -24,19 +24,13 @@ export function Configure($stateProvider, $urlRouterProvider, $ionicConfigProvid
           controller: 'ImagesCtrl'
         },
         'fabContent': {
-          template: '<button id="fab-images" class="button"><i class="icon ion-plus"></i></button>',
-          controller: function ($timeout) {
-            $timeout(function () {
-              document.getElementById('fab-images').classList.toggle('on');
-              document.getElementById('fab-images').classList.add('button-fab','button-fab-bottom-right', 'expanded', 'button-energized-900','spin')
-            }, 600);
-          }
+          template: ''
         }
       }
     })
 
     .state('app.image-detail', {
-      url: '/image-detail/:imageId',
+      url: '/image-detail/:imageId/:imageName',
       views: {
         'menuContent': {
           templateUrl: 'templates/image-detail.html',
@@ -56,12 +50,17 @@ export function Configure($stateProvider, $urlRouterProvider, $ionicConfigProvid
           controller: 'ContainersCtrl'
         },
         'fabContent': {
-          template: '<button id="fab-activity" class="button button-fab button-fab-bottom-right expanded button-energized-900 spin"><i class="icon ion-plus"></i></button>',
-          controller: function ($timeout) {
-            $timeout(function () {
-              document.getElementById('fab-activity').classList.toggle('on');
-            }, 200);
-          }
+          template: ''
+        }
+      }
+    })
+
+    .state('app.servers', {
+      url: '/servers',
+      views:{
+        'menuContent':{
+          templateUrl: 'templates/servers.html',
+          controller: 'ServerCtrl'
         }
       }
     })

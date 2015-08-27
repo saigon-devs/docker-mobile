@@ -1,7 +1,7 @@
 'use strict';
 import "moment"
 import "urish/angular-moment"
-
+import "zachsoft/Ionic-Material/dist/ionic.material"
 
 export function AppCtrl($scope) {
   $scope.isExpanded = false
@@ -82,7 +82,7 @@ export function AppCtrl($scope) {
   };
 }
 
-export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService, $ionicPopup) {
+export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService, $ionicPopup, ionicMaterialMotion, $cordovaSQLite) {
   $scope.search = {
     filterString: '',
     minLength: 3,
@@ -92,7 +92,6 @@ export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService, $ionic
   $scope.images = []
   //set header
   $scope.$parent.showHeader()
-  $scope.$parent.clearFabs()
 
   $scope.$on('$ionicView.enter', ()=> {
     $scope.search.isShow = false
@@ -114,16 +113,20 @@ export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService, $ionic
     }
     if ($scope.search.filterString.length === 0 || $scope.search.filterString.length >= $scope.search.minLength) {
       $ionicLoading.show();
+
       imageService.getAllImages(options)
         .then((result)=> {
           $scope.images = result.data
+          setTimeout(function() {
+            ionicMaterialMotion.ripple();
+          }, 500);
         }).then(()=> {
           $scope.$broadcast('scroll.refreshComplete');
           $ionicLoading.hide()
         }).catch((reason)=> {
           $ionicLoading.hide()
           $scope.$broadcast('scroll.refreshComplete');
-          console.log("Err: " + reason)
+
           $ionicPopup.alert({
             title: 'Error',
             template: 'Cannot connect to docker server.'
@@ -135,10 +138,9 @@ export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService, $ionic
 
 export function ImageDetailCtrl($scope, $ionicLoading, $stateParams, imageService) {
   $scope.currentImage = {}
-
+  $scope.title = $stateParams.imageName
   //set header
   $scope.$parent.showHeader()
-  $scope.$parent.clearFabs()
   $scope.$parent.hideMenuToggle()
 
 
@@ -172,9 +174,41 @@ export function ImageDetailCtrl($scope, $ionicLoading, $stateParams, imageServic
   }
 }
 
-export function ServerCtrl($scope, $timeout){
+export function ServerCtrl($scope, $cordovaSQLite, $ionicLoading, systemConfig){
   $scope.servers = []
 
+  let db
+  if(window.cordova) {
+    // App syntax
+    db = $cordovaSQLite.openDB(systemConfig.dbName);
+  } else {
+    // Ionic serve syntax
+    db = window.openDatabase(systemConfig.dbName, "1.0", "docker mobile app", -1);
+  }
+
+  $scope.$on('$ionicView.enter', ()=> {
+    $scope.loadAllServers()
+  })
+
+  $scope.loadAllServers = ()=>{
+    let query = 'SELECT * FROM servers'
+
+    $ionicLoading.show()
+    $cordovaSQLite.execute(db, query)
+      .then(
+      (res)=>{
+        $scope.servers = res.rows
+
+        console.log($scope.servers)
+
+        $ionicLoading.hide()
+      },
+      (err)=>{
+        console.log(err)
+        $ionicLoading.hide()
+      }
+    )
+  }
 }
 
 export function ContainersCtrl($scope, $timeout, ionicMaterialInk, ionicMaterialMotion) {

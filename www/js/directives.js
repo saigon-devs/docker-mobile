@@ -15,7 +15,7 @@ export function searchBar() {
 									 ng-change="query()"	ng-model="searchOption.filterString">
 					</div>
 				</div>
-				<i class="icon placeholder-icon ion-search"
+				<i class="icon placeholder-icon ion-search light"
 						ng-click="searchOption.txt=\'\'; searchOption.isShow= !searchOption.isShow"></i>
 			</div>`,
 
