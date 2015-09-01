@@ -4,9 +4,12 @@ import "urish/angular-moment"
 import "zachsoft/Ionic-Material/dist/ionic.material"
 
 export function AppCtrl($scope) {
-  $scope.isExpanded = false
-  $scope.hasHeaderFabLeft = false
-  $scope.hasHeaderFabRight = false
+  $scope.setting = {
+    hasMenuToggle: false,
+    isExpanded: false,
+    hasHeaderFabLeft: false,
+    hasHeaderFabRight: false
+  }
 
   $scope.hideNavBar = function () {
     document.getElementsByTagName('ion-nav-bar')[0].style.display = 'none';
@@ -14,14 +17,6 @@ export function AppCtrl($scope) {
 
   $scope.showNavBar = function () {
     document.getElementsByTagName('ion-nav-bar')[0].style.display = 'block';
-  }
-
-  $scope.hideMenuToggle = ()=> {
-    angular.element(document.querySelector('[menu-toggle="left"]'))[0].style.display = 'none';
-  }
-
-  $scope.showMenuToggle = ()=> {
-    angular.element(document.querySelector('[menu-toggle="left"]'))[0].style.display = 'block';
   }
 
   $scope.noHeader = function () {
@@ -33,8 +28,12 @@ export function AppCtrl($scope) {
     }
   };
 
+  $scope.setMenuToggle = (bool)=> {
+    $scope.setting.hasMenuToggle = bool
+  }
+
   $scope.setExpanded = function (bool) {
-    $scope.isExpanded = bool
+    $scope.setting.isExpanded = bool
   }
 
   $scope.setHeaderFab = function (location) {
@@ -50,8 +49,8 @@ export function AppCtrl($scope) {
         break
     }
 
-    $scope.hasHeaderFabLeft = hasHeaderFabLeft
-    $scope.hasHeaderFabRight = hasHeaderFabRight
+    $scope.setting.hasHeaderFabLeft = hasHeaderFabLeft
+    $scope.setting.hasHeaderFabRight = hasHeaderFabRight
   }
 
   $scope.hasHeader = function () {
@@ -82,7 +81,8 @@ export function AppCtrl($scope) {
   };
 }
 
-export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService, $ionicPopup, ionicMaterialMotion, $cordovaSQLite) {
+export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicPopup, ionicMaterialMotion,
+                           $timeout, imageService, currentDockerEndpoint) {
   $scope.search = {
     filterString: '',
     minLength: 3,
@@ -90,14 +90,29 @@ export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService, $ionic
   }
 
   $scope.images = []
-  //set header
-  $scope.$parent.showHeader()
+
+  $scope.$on('$ionicView.beforeEnter', function () {
+    //set header
+    $scope.$parent.showHeader()
+    $scope.$parent.setMenuToggle(true)
+  });
 
   $scope.$on('$ionicView.enter', ()=> {
-    $scope.search.isShow = false
-    if ($scope.images.length === 0) {
-      $scope.searchImages()
-    }
+    $timeout(()=>{
+      //todo: move this code to dashboard in future
+      if (currentDockerEndpoint.ip === '') {
+        $ionicHistory.nextViewOptions({
+          historyRoot: true
+        })
+        $state.go('app.servers')
+      }
+      else{
+        $scope.search.isShow = false
+        if ($scope.images.length === 0) {
+          $scope.searchImages()
+        }
+      }
+    }, 500)
   })
 
   $scope.clearSearch = ()=> {
@@ -117,13 +132,15 @@ export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService, $ionic
       imageService.getAllImages(options)
         .then((result)=> {
           $scope.images = result.data
-          setTimeout(function() {
+          setTimeout(function () {
             ionicMaterialMotion.ripple();
           }, 500);
-        }).then(()=> {
+        })
+        .then(()=> {
           $scope.$broadcast('scroll.refreshComplete');
           $ionicLoading.hide()
-        }).catch((reason)=> {
+        })
+        .catch((reason)=> {
           $ionicLoading.hide()
           $scope.$broadcast('scroll.refreshComplete');
 
@@ -139,10 +156,12 @@ export function ImagesCtrl($scope, $timeout, $ionicLoading, imageService, $ionic
 export function ImageDetailCtrl($scope, $ionicLoading, $stateParams, imageService) {
   $scope.currentImage = {}
   $scope.title = $stateParams.imageName
-  //set header
-  $scope.$parent.showHeader()
-  $scope.$parent.hideMenuToggle()
 
+  $scope.$on('$ionicView.beforeEnter', function () {
+    //set header
+    $scope.$parent.showHeader()
+    $scope.$parent.setMenuToggle(false)
+  });
 
   $scope.$on('$ionicView.enter', ()=> {
     $scope.queryImageDetail()
@@ -164,7 +183,7 @@ export function ImageDetailCtrl($scope, $ionicLoading, $stateParams, imageServic
       .then(()=> {
         $ionicLoading.hide()
       })
-      .catch((reason)=>{
+      .catch((reason)=> {
         $ionicLoading.hide()
         $ionicPopup.alert({
           title: 'Error',
@@ -174,40 +193,68 @@ export function ImageDetailCtrl($scope, $ionicLoading, $stateParams, imageServic
   }
 }
 
-export function ServerCtrl($scope, $cordovaSQLite, $ionicLoading, systemConfig){
-  $scope.servers = []
+export function ServerCtrl($scope, $ionicLoading, $state, $ionicHistory,
+                           dataService, currentDockerEndpoint) {
 
-  let db
-  if(window.cordova) {
-    // App syntax
-    db = $cordovaSQLite.openDB(systemConfig.dbName);
-  } else {
-    // Ionic serve syntax
-    db = window.openDatabase(systemConfig.dbName, "1.0", "docker mobile app", -1);
-  }
-
-  $scope.$on('$ionicView.enter', ()=> {
-    $scope.loadAllServers()
+  $scope.$on('$ionicView.beforeEnter', function () {
+    //set header
+    $scope.$parent.showHeader()
+    $scope.$parent.setMenuToggle(true)
   })
 
-  $scope.loadAllServers = ()=>{
-    let query = 'SELECT * FROM servers'
+  $scope.data = {
+    servers: [],
+    selectedServerId: 0
+  }
 
+  $scope.currrentSelectedServer = 0
+
+  loadAllServers()
+
+  function loadAllServers() {
     $ionicLoading.show()
-    $cordovaSQLite.execute(db, query)
+    dataService.loadAllServers()
       .then(
-      (res)=>{
-        $scope.servers = res.rows
-
-        console.log($scope.servers)
-
+      (res)=> {
+        if (res.rows.length > 0) {
+          for (var i = 0; i < res.rows.length; i++) {
+            if (res.rows.item(i).isSelected === 1) {
+              $scope.data.selectedServerId = res.rows.item(i).id
+            }
+            $scope.data.servers.push({
+              id: res.rows.item(i).id,
+              ip: res.rows.item(i).ip,
+              port: res.rows.item(i).port
+            });
+          }
+        }
+        else {
+          $scope.data.servers = []
+        }
         $ionicLoading.hide()
       },
-      (err)=>{
+      (err)=> {
         console.log(err)
         $ionicLoading.hide()
       }
     )
+  }
+
+  $scope.selectServer = (serverId, ip, port)=> {
+    dataService.selectDockerEndpoint(serverId)
+      .then(()=> {
+        currentDockerEndpoint.ip = ip
+        currentDockerEndpoint.port = port
+
+        $ionicHistory.nextViewOptions({
+          historyRoot: true
+        })
+        $state.go('app.images')
+      })
+      .catch((err)=> {
+        console.log(err)
+      })
+
   }
 }
 

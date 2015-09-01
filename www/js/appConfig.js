@@ -1,7 +1,7 @@
 /**
  * Created by Phuong on 8/13/2015.
  */
-export function Configure($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+export function Configure($stateProvider, $urlRouterProvider) {
   //$ionicConfigProvider.views.maxCache(0);
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router

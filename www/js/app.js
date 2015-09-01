@@ -21,7 +21,7 @@ import * as directiveLib from 'js/directives'
 // 'starter.controllers' is found in controllers.js
 angular.module('docker-client', ['ionic', 'ngCordova', 'ionic-material', 'angularMoment'])
 
-  .run(function ($ionicPlatform, $cordovaSQLite, systemConfig) {
+  .run(function ($ionicPlatform, dataService) {
     $ionicPlatform.ready(function () {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
       // for form inputs)
@@ -33,34 +33,14 @@ angular.module('docker-client', ['ionic', 'ngCordova', 'ionic-material', 'angula
         // org.apache.cordova.statusbar required
         StatusBar.styleLightContent();
       }
-
       //setup db
-      setupDb($cordovaSQLite, systemConfig)
+      dataService.initDB()
     });
-
-    function setupDb($cordovaSQLite, config){
-      let db
-      if(window.cordova) {
-        // App syntax
-        db = $cordovaSQLite.openDB(config.dbName);
-      } else {
-        // Ionic serve syntax
-        db = window.openDatabase(config.dbName, "1.0", "docker mobile app", -1);
-      }
-      $cordovaSQLite.execute(db, `
-        CREATE TABLE IF NOT EXISTS servers (id integer primary key AUTOINCREMENT, ip text, port text)
-      `)
-      $cordovaSQLite.execute(db, `
-        INSERT INTO servers (ip, port) VALUES ('jackyu1404.cloudapp.net', 2375)
-      `);
-    }
-
   })
 
   .config(appConfig.Configure)
 
   .constant('$ionicLoadingConfig', {
-    /*template: '<ion-spinner></ion-spinner>Loading...'*/
     template: `
       <div class="loader">
         <svg class="circular">
@@ -74,9 +54,14 @@ angular.module('docker-client', ['ionic', 'ngCordova', 'ionic-material', 'angula
     dbName: 'docker-mobile.db'
   })
 
-  .factory('settingService', serviceLib.settingService)
+  .value('currentDockerEndpoint',{
+    ip: '',
+    port: 2375
+  })
 
   .factory('imageService', serviceLib.imageService)
+
+  .factory('dataService', serviceLib.dataService)
 
   .controller('AppCtrl', controllerLib.AppCtrl)
 

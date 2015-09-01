@@ -1,5 +1,20 @@
-<ion-view>
+<ion-view title="Servers">
     <ion-content ng-class="{expanded:isExpanded}">
-        hello
+        <ion-list>
+            <ion-radio ng-repeat="server in data.servers"
+                       class="item"
+                       ng-value="server.id"
+                       ng-model="data.selectedServerId"
+                       ng-click="selectServer(server.id, server.ip, server.port)">
+                <span>{{::server.ip}}</span>
+                <div class="pull-right">
+                    <span style="font-size: 12px">{{::server.port}}</span>
+                </div>
+            </ion-radio>
+        </ion-list>
     </ion-content>
+    <div>
+        <button class="button button-energized-900 button-fab button-fab-bottom-right">
+            <i class="icon ion-plus light"></i></button>
+    </div>
 </ion-view>
