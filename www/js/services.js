@@ -35,9 +35,9 @@ export function dataService($cordovaSQLite, $q, systemConfig, currentDockerEndpo
       CREATE TABLE IF NOT EXISTS servers (id integer primary key AUTOINCREMENT, ip text, port text, isSelected numeric);
       `)
 
-    $cordovaSQLite.execute(self.db, `DELETE FROM servers`)
+    //$cordovaSQLite.execute(self.db, `DELETE FROM servers`)
 
-    $cordovaSQLite.execute(self.db, `INSERT INTO servers(ip, port, isSelected) VALUES ('jackyu1404.cloudapp.net', 2375, 0)`)
+    //$cordovaSQLite.execute(self.db, `INSERT INTO servers(ip, port, isSelected) VALUES ('jackyu1404.cloudapp.net3', 2375, 0)`)
 
     self.loadCurrentDockerEndpoint()
       .then((res)=> {
@@ -72,6 +72,24 @@ export function dataService($cordovaSQLite, $q, systemConfig, currentDockerEndpo
     })
 
     return deferred.promise
+  }
+
+  self.deleteServer = (serverId)=>{
+    let query = 'DELETE FROM Servers WHERE id = ?'
+    let promise = $cordovaSQLite.execute(self.db, query, [serverId])
+    return promise
+  }
+
+  self.updateServer = (editingServer)=>{
+    let query = 'UPDATE Servers SET ip =?, port = ? WHERE id = ?'
+    let promise = $cordovaSQLite.execute(self.db, query, [editingServer.ip, editingServer.port, editingServer.id])
+    return promise
+  }
+
+  self.addNewServer = (newServer)=>{
+    let query = 'INSERT INTO Servers(ip, port, isSelected) VALUES (?, ?, ?)'
+    let promise = $cordovaSQLite.execute(self.db, query, [newServer.ip, newServer.port, newServer.isSelected])
+    return promise
   }
 
   return self

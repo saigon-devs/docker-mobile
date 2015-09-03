@@ -98,7 +98,7 @@ export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicP
   });
 
   $scope.$on('$ionicView.enter', ()=> {
-    $timeout(()=>{
+    $timeout(()=> {
       //todo: move this code to dashboard in future
       if (currentDockerEndpoint.ip === '') {
         $ionicHistory.nextViewOptions({
@@ -106,13 +106,13 @@ export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicP
         })
         $state.go('app.servers')
       }
-      else{
+      else {
         $scope.search.isShow = false
         if ($scope.images.length === 0) {
           $scope.searchImages()
         }
       }
-    }, 500)
+    }, 1000)
   })
 
   $scope.clearSearch = ()=> {
@@ -193,8 +193,16 @@ export function ImageDetailCtrl($scope, $ionicLoading, $stateParams, imageServic
   }
 }
 
-export function ServerCtrl($scope, $ionicLoading, $state, $ionicHistory,
+export function ServerCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicModal, $ionicListDelegate,
                            dataService, currentDockerEndpoint) {
+
+  //modal
+  $ionicModal.fromTemplateUrl('add-edit-server-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function (modal) {
+    $scope.modal = modal;
+  });
 
   $scope.$on('$ionicView.beforeEnter', function () {
     //set header
@@ -204,18 +212,20 @@ export function ServerCtrl($scope, $ionicLoading, $state, $ionicHistory,
 
   $scope.data = {
     servers: [],
-    selectedServerId: 0
+    selectedServerId: 0,
+    listCanSwipe: true,
+    editingServer: {}
   }
 
-  $scope.currrentSelectedServer = 0
-
-  loadAllServers()
+  $scope.$on('$ionicView.enter', ()=> {
+    loadAllServers()
+  })
 
   function loadAllServers() {
     $ionicLoading.show()
     dataService.loadAllServers()
-      .then(
-      (res)=> {
+      .then((res)=> {
+        $scope.data.servers = []
         if (res.rows.length > 0) {
           for (var i = 0; i < res.rows.length; i++) {
             if (res.rows.item(i).isSelected === 1) {
@@ -224,7 +234,8 @@ export function ServerCtrl($scope, $ionicLoading, $state, $ionicHistory,
             $scope.data.servers.push({
               id: res.rows.item(i).id,
               ip: res.rows.item(i).ip,
-              port: res.rows.item(i).port
+              port: res.rows.item(i).port,
+              isSelected: res.rows.item(i).isSelected
             });
           }
         }
@@ -254,8 +265,86 @@ export function ServerCtrl($scope, $ionicLoading, $state, $ionicHistory,
       .catch((err)=> {
         console.log(err)
       })
-
   }
+
+  $scope.removeServer = (server)=> {
+    dataService.deleteServer(server.id)
+      .then(()=> {
+        $scope.data.servers.splice($scope.data.servers.indexOf(server), 1)
+      })
+      .catch((err)=> {
+        console.log(err)
+      })
+  }
+
+  $scope.editServer = (server)=> {
+    $ionicListDelegate.closeOptionButtons();
+    // Remember edit item to change it later
+    $scope.tmpServerEditing = server
+    // Preset form values
+    $scope.data.editingServer = angular.copy(server)
+    $scope.openModal('edit')
+  }
+
+  $scope.addOrEditServer = (action)=> {
+    if (action === 'edit') {
+      dataService.updateServer($scope.data.editingServer)
+        .then((res)=> {
+          let editItemIndex = $scope.data.servers.indexOf($scope.tmpServerEditing)
+          $scope.data.servers[editItemIndex].ip = $scope.data.editingServer.ip
+          $scope.data.servers[editItemIndex].port = $scope.data.editingServer.port
+        })
+        .catch((err)=> {
+          console.log(err)
+        })
+    }
+    else if (action === 'addNew') {
+      dataService.addNewServer($scope.data.editingServer)
+        .then((res)=> {
+          let newServer = {
+            id: res.insertId,
+            ip: $scope.data.editingServer.ip,
+            port: $scope.data.editingServer.port,
+            isSelected: $scope.data.editingServer.isSelected
+          }
+          $scope.data.servers.push(newServer)
+        })
+        .catch((err)=> {
+          console.log(err)
+        })
+    }
+    $scope.closeModal()
+  }
+
+  $scope.addnewServer = ()=> {
+    $scope.data.editingServer = {
+      ip: '',
+      port: '2375',
+      isSelected: 0
+    }
+    $scope.openModal('addNew')
+  }
+
+  $scope.openModal = function (action) {
+    $scope.action = action
+    $scope.modal.show();
+  }
+
+  $scope.closeModal = function () {
+    $scope.modal.remove()
+    // Reload modal template to have cleared form
+    $ionicModal.fromTemplateUrl('add-edit-server-modal.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function (modal) {
+      $scope.modal = modal;
+    })
+  }
+
+  //Cleanup the modal when we're done with it!
+  $scope.$on('$destroy', function () {
+    $scope.modal.remove();
+  })
 }
 
 export function ContainersCtrl($scope, $timeout, ionicMaterialInk, ionicMaterialMotion) {
