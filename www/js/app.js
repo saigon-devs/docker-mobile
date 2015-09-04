@@ -19,7 +19,8 @@ import * as directiveLib from 'js/directives'
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('docker-client', ['ionic', 'ngCordova', 'ionic-material', 'angularMoment'])
+angular.module('docker-client', ['ionic', 'ngCordova',
+  'ionic-material', 'angularMoment'])
 
   .run(function ($ionicPlatform, dataService) {
     $ionicPlatform.ready(function () {

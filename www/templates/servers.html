@@ -43,28 +43,40 @@
                     style="top:1px; font-size:10px"
                     ng-click="closeModal()">Cancle</button>
         </ion-header-bar>
-        <ion-content has-header="true">
-            <form name="form" ng-model="data.editingServer">
+        <ion-content has-header="true" class="padding">
+            <form name="editingServerForm"
+                  novalidate=""
+                  ng-submit="addOrEditServer(action)"
+                  ng-model="data.editingServer">
                 <ion-list>
-                    <li class="item item-input item-stacked-label">
-                        <span class="input-label">Server name</span>
+                    <label class="item item-input item-input" style="margin: 5px 0"
+                           ng-class="{ 'has-errors' : editingServerForm.ip.$invalid, 'no-errors' : editingServerForm.ip.$valid}">
+                        <span class="input-label">Address</span>
                         <input type="text" placeholder="ip or server name" name="ip" ng-model="data.editingServer.ip" required />
-                    </li>
-                    <li class="item item-input item-stacked-label">
+                    </label>
+                    <div class="error-container" ng-show="editingServerForm.ip.$invalid">
+                        <div class="error" ng-message="required">
+                            <i class="ion-information-circled"></i>
+                            This field is required!
+                        </div>
+                    </div>
+
+                    <label class="item item-input item-input"
+                           ng-class="{ 'has-errors' : editingServerForm.port.$invalid && !editingServerForm.port.$pristine, 'no-errors' : editingServerForm.port.$valid}">
                         <span class="input-label">Port</span>
                         <input type="text" placeholder="ex: 2375" name="port" ng-model="data.editingServer.port" required />
-                    </li>
-                    <div>
-                        <ion-button ng-show="action == 'addNew'" style="width: 100%;"
-                                    class="button button-block button-positive" ng-click="addOrEditServer('addNew')">
-                            Add
-                        </ion-button>
-                        <ion-button ng-show="action == 'edit'" style="width: 100%;"
-                                    class="button button-block button-positive" ng-click="addOrEditServer('edit')">
-                            Edit
-                        </ion-button>
+                    </label>
+
+                    <div class="error-container" ng-show="editingServerForm.port.$invalid">
+                        <div class="error" ng-message="required">
+                            <i class="ion-information-circled"></i>
+                            This field is required!
+                        </div>
                     </div>
                 </ion-list>
+                <button type="submit" ng-disabled="editingServerForm.$invalid" class="button button-block button-positive">
+                    Save
+                </button>
             </form>
         </ion-content>
     </ion-modal-view>
