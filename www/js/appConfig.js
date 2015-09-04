@@ -13,11 +13,16 @@ export function Configure($stateProvider, $urlRouterProvider) {
       url: '/app',
       abstract: true,
       templateUrl: 'templates/menu.html',
-      controller: 'AppCtrl'
+      controller: 'AppCtrl',
+      resolve:{
+        'currentDockerEndpointService': (dataService) =>{
+          return dataService.loadCurrentDockerEndpoint()
+        }
+      }
     })
 
     .state('app.images', {
-      url: '/images',
+      url: '/images/:forceReload',
       views: {
         'menuContent': {
           templateUrl: 'templates/tab-images.html',
@@ -66,5 +71,5 @@ export function Configure($stateProvider, $urlRouterProvider) {
     })
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/images');
+  $urlRouterProvider.otherwise('/app/images/');
 }

@@ -3,7 +3,13 @@ import "moment"
 import "urish/angular-moment"
 import "zachsoft/Ionic-Material/dist/ionic.material"
 
-export function AppCtrl($scope) {
+export function AppCtrl($scope, currentDockerEndpointService, currentDockerEndpoint) {
+  //load data setting
+  if (currentDockerEndpointService.rows.length > 0) {
+    currentDockerEndpoint.ip = currentDockerEndpointService.rows[0].ip
+    currentDockerEndpoint.port =currentDockerEndpointService.rows[0].port
+  }
+
   $scope.setting = {
     hasMenuToggle: false,
     isExpanded: false,
@@ -82,7 +88,7 @@ export function AppCtrl($scope) {
 }
 
 export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicPopup, ionicMaterialMotion,
-                           $timeout, imageService, currentDockerEndpoint) {
+                           $stateParams, imageService, currentDockerEndpoint) {
   $scope.search = {
     filterString: '',
     minLength: 3,
@@ -98,21 +104,19 @@ export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicP
   });
 
   $scope.$on('$ionicView.enter', ()=> {
-    $timeout(()=> {
-      //todo: move this code to dashboard in future
-      if (currentDockerEndpoint.ip === '') {
-        $ionicHistory.nextViewOptions({
-          historyRoot: true
-        })
-        $state.go('app.servers')
+    //todo: move this code to dashboard in future
+    if (currentDockerEndpoint.ip === '') {
+      $ionicHistory.nextViewOptions({
+        historyRoot: true
+      })
+      $state.go('app.servers')
+    }
+    else {
+      $scope.search.isShow = false
+      if ($scope.images.length === 0 || $stateParams.forceReload) {
+        $scope.searchImages()
       }
-      else {
-        $scope.search.isShow = false
-        if ($scope.images.length === 0) {
-          $scope.searchImages()
-        }
-      }
-    }, 1000)
+    }
   })
 
   $scope.clearSearch = ()=> {
@@ -260,7 +264,7 @@ export function ServerCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicM
         $ionicHistory.nextViewOptions({
           historyRoot: true
         })
-        $state.go('app.images')
+        $state.go('app.images', {forceReload: true})
       })
       .catch((err)=> {
         console.log(err)
@@ -317,6 +321,7 @@ export function ServerCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicM
   }
 
   $scope.addnewServer = ()=> {
+    $ionicListDelegate.closeOptionButtons();
     $scope.data.editingServer = {
       ip: '',
       port: '2375',

@@ -39,13 +39,13 @@ export function dataService($cordovaSQLite, $q, systemConfig, currentDockerEndpo
 
     //$cordovaSQLite.execute(self.db, `INSERT INTO servers(ip, port, isSelected) VALUES ('jackyu1404.cloudapp.net3', 2375, 0)`)
 
-    self.loadCurrentDockerEndpoint()
+    /*self.loadCurrentDockerEndpoint()
       .then((res)=> {
         if (res.rows.length > 0) {
           currentDockerEndpoint.ip = res.rows[0].ip
           currentDockerEndpoint.port = res.rows[0].port
         }
-      })
+      })*/
   }
 
   self.loadCurrentDockerEndpoint = ()=> {
