@@ -15,7 +15,7 @@ export function Configure($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/menu.html',
       controller: 'AppCtrl',
       resolve:{
-        'currentDockerEndpointService': (dataService) =>{
+        'selectedtDockerEndpoint': (dataService) =>{
           return dataService.loadCurrentDockerEndpoint()
         }
       }

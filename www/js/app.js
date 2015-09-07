@@ -1,10 +1,10 @@
-import "ionic/js/ionic";
-import "angular";
-import "angular-animate";
-import "angular-ui-router";
-import "angular-sanitize";
-import "ionic/js/ionic-angular";
-import "zachsoft/Ionic-Material/dist/ionic.material"
+import "ionic/js/ionic.min";
+import "angular/angular.min";
+import "angular-animate/angular-animate.min";
+import "angular-ui-router/angular-ui-router.min";
+import "angular-sanitize/angular-sanitize.min";
+import "ionic/js/ionic-angular.min";
+import "zachsoft/Ionic-Material/dist/ionic.material.min"
 import "driftyco/ng-cordova/dist/ng-cordova.min"
 
 import * as appConfig from "js/appConfig"

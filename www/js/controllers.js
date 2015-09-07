@@ -3,11 +3,11 @@ import "moment"
 import "urish/angular-moment"
 import "zachsoft/Ionic-Material/dist/ionic.material"
 
-export function AppCtrl($scope, currentDockerEndpointService, currentDockerEndpoint) {
+export function AppCtrl($scope, selectedtDockerEndpoint, currentDockerEndpoint) {
   //load data setting
-  if (currentDockerEndpointService.rows.length > 0) {
-    currentDockerEndpoint.ip = currentDockerEndpointService.rows[0].ip
-    currentDockerEndpoint.port =currentDockerEndpointService.rows[0].port
+  if (selectedtDockerEndpoint.length > 0) {
+    currentDockerEndpoint.ip = selectedtDockerEndpoint[0].ip
+    currentDockerEndpoint.port = selectedtDockerEndpoint[0].port
   }
 
   $scope.setting = {

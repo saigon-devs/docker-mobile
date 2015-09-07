@@ -38,20 +38,22 @@ export function dataService($cordovaSQLite, $q, systemConfig, currentDockerEndpo
     //$cordovaSQLite.execute(self.db, `DELETE FROM servers`)
 
     //$cordovaSQLite.execute(self.db, `INSERT INTO servers(ip, port, isSelected) VALUES ('jackyu1404.cloudapp.net3', 2375, 0)`)
-
-    /*self.loadCurrentDockerEndpoint()
-      .then((res)=> {
-        if (res.rows.length > 0) {
-          currentDockerEndpoint.ip = res.rows[0].ip
-          currentDockerEndpoint.port = res.rows[0].port
-        }
-      })*/
   }
 
   self.loadCurrentDockerEndpoint = ()=> {
     let query = 'SELECT * FROM servers WHERE isSelected = 1'
-    let promise = $cordovaSQLite.execute(self.db, query)
-    return promise
+    var q = $q.defer()
+    $cordovaSQLite.execute(self.db, query)
+    .then((results)=>{
+        var i, len, allItems = []
+        for(i = 0, len = results.rows.length; i < len; i++) {
+          allItems.push(results.rows.item(i))
+        }
+        q.resolve(allItems)
+      }, (err)=>{
+        q.reject(err)
+      })
+    return q.promise
   }
 
   self.loadAllServers = ()=>{
