@@ -14,6 +14,21 @@ export function imageService(currentDockerEndpoint) {
     getImageDetail(options){
       let promise = this.buildDockerApiEndpoint().queryInspectImage(options)
       return promise
+    },
+
+    searchImages(options){
+      let promise = this.buildDockerApiEndpoint().searchImages(options)
+      return promise
+    },
+
+    createImage(option){
+      let promise = this.buildDockerApiEndpoint().createImage(option)
+      return promise
+    },
+
+    removeImage(imageId){
+      let promise = this.buildDockerApiEndpoint().removeImage(imageId)
+      return promise
     }
   }
 }

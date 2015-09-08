@@ -21,13 +21,13 @@ System.config({
     "babel": "npm:babel-core@5.8.22",
     "babel-runtime": "npm:babel-runtime@5.8.20",
     "core-js": "npm:core-js@0.9.18",
-    "docker-api-wrapper": "npm:docker-api-wrapper@0.2.10",
+    "docker-api-wrapper": "npm:docker-api-wrapper@0.2.15",
     "driftyco/ng-cordova": "github:driftyco/ng-cordova@0.1.20-alpha",
     "ionic": "github:driftyco/ionic-bower@1.1.0",
     "moment": "github:moment/moment@2.10.6",
     "raibutera/robotodraft": "github:raibutera/robotodraft@1.1.0",
     "style": "github:systemjs/plugin-css@0.1.9",
-    "urish/angular-moment": "github:urish/angular-moment@0.10.2",
+    "urish/angular-moment": "github:urish/angular-moment@0.10.3",
     "zachsoft/Ionic-Material": "github:zachsoft/Ionic-Material@0.4.2",
     "github:angular-ui/ui-router@0.2.13": {
       "angular": "github:angular/bower-angular@1.3.15"
@@ -84,7 +84,7 @@ System.config({
       "util": "npm:util@0.10.3"
     },
     "github:systemjs/plugin-css@0.1.9": {
-      "clean-css": "npm:clean-css@3.3.9",
+      "clean-css": "npm:clean-css@3.4.1",
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "path": "github:jspm/nodelibs-path@0.1.0"
     },
@@ -119,7 +119,7 @@ System.config({
       "ieee754": "npm:ieee754@1.1.6",
       "is-array": "npm:is-array@1.0.1"
     },
-    "npm:clean-css@3.3.9": {
+    "npm:clean-css@3.4.1": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
       "commander": "npm:commander@2.8.1",
       "fs": "github:jspm/nodelibs-fs@0.1.2",
@@ -145,7 +145,7 @@ System.config({
       "process": "github:jspm/nodelibs-process@0.1.1",
       "systemjs-json": "github:systemjs/plugin-json@0.1.0"
     },
-    "npm:core-js@1.1.1": {
+    "npm:core-js@1.1.4": {
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "process": "github:jspm/nodelibs-process@0.1.1",
       "systemjs-json": "github:systemjs/plugin-json@0.1.0"
@@ -153,10 +153,10 @@ System.config({
     "npm:core-util-is@1.0.1": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0"
     },
-    "npm:docker-api-wrapper@0.2.10": {
+    "npm:docker-api-wrapper@0.2.15": {
       "async": "npm:async@1.4.2",
       "axios": "npm:axios@0.5.4",
-      "core-js": "npm:core-js@1.1.1",
+      "core-js": "npm:core-js@1.1.4",
       "fs": "npm:fs@0.0.2",
       "http": "npm:http@0.0.0",
       "lodash": "npm:lodash@3.10.1",

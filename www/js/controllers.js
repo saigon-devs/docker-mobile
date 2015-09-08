@@ -1,7 +1,6 @@
 'use strict';
 import "moment"
-import "urish/angular-moment"
-import "zachsoft/Ionic-Material/dist/ionic.material"
+import "urish/angular-moment/angular-moment.min"
 
 export function AppCtrl($scope, selectedtDockerEndpoint, currentDockerEndpoint) {
   //load data setting
@@ -87,15 +86,32 @@ export function AppCtrl($scope, selectedtDockerEndpoint, currentDockerEndpoint) 
   };
 }
 
-export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicPopup, ionicMaterialMotion,
-                           $stateParams, imageService, currentDockerEndpoint) {
-  $scope.search = {
-    filterString: '',
-    minLength: 3,
-    isShow: false
+export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicPopup, $ionicModal,
+                           ionicMaterialMotion, $stateParams, imageService, currentDockerEndpoint) {
+  //modal
+  $ionicModal.fromTemplateUrl('add-image-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function (modal) {
+    $scope.modal = modal;
+  });
+
+  $scope.ImageListOption = {
+    search: {
+      filterString: '',
+      minLength: 3,
+      isShow: false
+    },
+    images: []
   }
 
-  $scope.images = []
+  $scope.createImageOption = {
+    searchOption : {
+      filterString: '',
+      minLength: 3
+    },
+    images: []
+  }
 
   $scope.$on('$ionicView.beforeEnter', function () {
     //set header
@@ -112,8 +128,8 @@ export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicP
       $state.go('app.servers')
     }
     else {
-      $scope.search.isShow = false
-      if ($scope.images.length === 0 || $stateParams.forceReload) {
+      $scope.ImageListOption.search.isShow = false
+      if ($scope.ImageListOption.images.length === 0 || $stateParams.forceReload) {
         $scope.searchImages()
       }
     }
@@ -127,15 +143,16 @@ export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicP
     let options = {
       queryData: {all: 0}
     }
-    if ($scope.search.filterString.length >= $scope.search.minLength) {
-      options.queryData["filter"] = '*' + $scope.search.filterString + '*'
+    if ($scope.ImageListOption.search.filterString.length >= $scope.ImageListOption.search.minLength) {
+      options.queryData["filter"] = '*' + $scope.ImageListOption.search.filterString.toLowerCase() + '*'
     }
-    if ($scope.search.filterString.length === 0 || $scope.search.filterString.length >= $scope.search.minLength) {
+    if ($scope.ImageListOption.search.filterString.length === 0
+        || $scope.ImageListOption.search.filterString.length >= $scope.ImageListOption.search.minLength) {
       $ionicLoading.show();
 
       imageService.getAllImages(options)
         .then((result)=> {
-          $scope.images = result.data
+          $scope.ImageListOption.images = result.data
           setTimeout(function () {
             ionicMaterialMotion.ripple();
           }, 500);
@@ -155,6 +172,95 @@ export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicP
         })
     }
   }
+
+  $scope.searchImageFromRegistry = ()=>{
+    if($scope.createImageOption.searchOption.filterString.length === 0){
+      $scope.createImageOption.images = []
+    }
+    else if ($scope.createImageOption.searchOption.filterString.length >= $scope.createImageOption.searchOption.minLength) {
+      $ionicLoading.show();
+
+      let options = {
+        queryData: {
+          term: $scope.createImageOption.searchOption.filterString.toLowerCase()
+        }
+      }
+      imageService.searchImages(options).then((result) =>{
+        $ionicLoading.hide()
+        $scope.createImageOption.images = result.data
+      }).catch((reason) =>{
+        $ionicLoading.hide()
+        console.log(reason)
+        $ionicPopup.alert({
+          title: 'Error',
+          template: 'Cannot connect to docker server.'
+        });
+      })
+    }
+  }
+
+  $scope.createImage = (imageInfo)=>{
+    $ionicLoading.show()
+    console.log(imageInfo)
+    let options = {
+      queryData: {
+        fromImage: imageInfo.name
+      }
+    }
+    imageService.createImage(options).then((result)=>{
+      console.log(result)
+      $ionicLoading.hide()
+      $ionicPopup.alert({
+        title: 'Info',
+        template: 'Create successfully.'
+      });
+    }).catch((reason)=>{
+      $ionicLoading.hide()
+      console.log(reason)
+      $ionicPopup.alert({
+        title: 'Error',
+        template: 'Cannot create new image.'
+      });
+    })
+  }
+
+  $scope.removeImage = (image)=>{
+    $ionicLoading.show()
+    console.log(image.Id)
+    imageService.removeImage(image.Id).then((result)=>{
+      $ionicLoading.hide()
+      $scope.ImageListOption.images.splice($scope.ImageListOption.images.indexOf(image), 1)
+    }).catch((reason)=>{
+      $ionicLoading.hide()
+      console.log(reason)
+      $ionicPopup.alert({
+        title: 'Error',
+        template: 'Cannot remove image.'
+      });
+    })
+  }
+
+  $scope.openCreateImageModal = function () {
+    $scope.modal.show();
+  }
+
+  $scope.closeCreateImageModal = function () {
+    $scope.modal.remove()
+    // Reload modal template to have cleared form
+    $ionicModal.fromTemplateUrl('add-image-modal.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function (modal) {
+      $scope.modal = modal;
+    })
+
+    $scope.searchImages()
+  }
+
+  //Cleanup the modal when we're done with it!
+  $scope.$on('$destroy', function () {
+    $scope.modal.remove();
+  })
 }
 
 export function ImageDetailCtrl($scope, $ionicLoading, $stateParams, imageService) {
