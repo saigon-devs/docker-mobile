@@ -204,7 +204,8 @@ export function ImagesCtrl($scope, $ionicLoading, $state, $ionicHistory, $ionicP
     console.log(imageInfo)
     let options = {
       queryData: {
-        fromImage: imageInfo.name
+        fromImage: imageInfo.name,
+        tag: 'latest'
       }
     }
     imageService.createImage(options).then((result)=>{
